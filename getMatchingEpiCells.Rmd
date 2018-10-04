@@ -1,0 +1,66 @@
+---
+title: "getMatchingEpiCells.Rmd"
+author: Lincoln
+date: 9.13.18
+output: html_document
+
+lets see what we can do here
+---
+
+```{r}
+setwd("/home/rstudio/01-STARfusion_R_manipulation/")
+```
+
+read in cell names
+  note these are for ALL CELLS in analysis, not just the epithelial
+```{r}
+maligCellNames <- read.csv("malig_cell_names.csv", header = F)
+nonMaligCellNames <- read.csv("nonMalig_cell_names.csv", header = F)
+```
+
+get file names
+```{r}
+healthy_fileNames <- list.files("02-healthyCellsOut/")
+tumor_fileNames <- list.files("03-allEpithelialOut/")
+```
+
+just keep the part we want
+```{r}
+healthy_cells_in_dir <- c()
+
+for(i in 1:length(healthy_fileNames)){
+  currCell <- ""
+  currList <- strsplit(healthy_fileNames[i], "_")
+  currCell <- paste(currList[[1]][1], currList[[1]][2], sep = "_")
+  healthy_cells_in_dir <- c(healthy_cells_in_dir, currCell)
+}
+
+tumor_cells_in_dir <- c()
+for(i in 1:length(tumor_fileNames)){
+  currCell1 <- ""
+  currList1 <- strsplit(tumor_fileNames[i], "_")
+  currCell1 <- paste(currList1[[1]][1], currList1[[1]][2], sep = "_")
+  tumor_cells_in_dir <- c(tumor_cells_in_dir, currCell1)
+}
+```
+
+```{r}
+length(nonMaligCellNames$V1)
+length(healthy_cells_in_dir)
+
+length(maligCellNames$V1)
+length(tumor_cells_in_dir)
+```
+
+
+```{r}
+common_cells_healthy <- intersect(healthy_cells_in_dir, nonMaligCellNames$V1)
+length(common_cells_healthy)
+
+common_cells_tumor <- intersect(tumor_cells_in_dir, maligCellNames$V1)
+length(common_cells_tumor)
+```
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////

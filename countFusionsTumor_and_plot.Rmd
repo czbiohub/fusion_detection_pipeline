@@ -1,0 +1,181 @@
+---
+title: "countFusionsTumor_and_plot.Rmd"
+author: Lincoln
+date: 9.13.18
+output: html_document
+
+---
+
+```{r}
+setwd("/home/rstudio/01-STARfusion_R_manipulation/01-tumorCellsOut/")
+```
+
+get cells list
+```{r}
+t_cells <- list.files(path = ".", pattern = ".tsv")
+```
+
+raw counts
+```{r}
+raw_countsT <- c()
+
+for(t_cell in t_cells){
+  df_t <- read.csv(t_cell, sep = "\t", header = T)
+  raw_countT <- nrow(df_t)
+  raw_countsT <- c(raw_countsT, raw_countT)
+}
+```
+
+```{r}
+ave(raw_countsT)[1]
+```
+
+what about total fusion reads? 
+```{r}
+read_countsT <- c()
+
+for(t_cell in t_cells){
+  df_t <- read.csv(t_cell, sep = "\t", header = T)
+  read_countT <- sum(df_t$JunctionReadCount) + sum(df_t$SpanningFragCount)
+  read_countsT <- c(read_countsT, read_countT)
+}
+```
+
+```{r}
+ave(read_countsT)[1]
+```
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+WANT TO PLOT SOME OF THESE DATA
+
+get cell names
+```{r}
+t_cellNames <- c()
+
+for(i in 1:length(t_cells)){
+  currCell <- ""
+  currList <- strsplit(t_cells[i], "_")
+  currCell <- paste(currList[[1]][1], currList[[1]][2], sep = "_")
+  t_cellNames <- c(t_cellNames, currCell)
+}
+```
+
+turn this thing into a dataframe, so that we can plot it
+```{r}
+read_countsT <- as.data.frame(read_countsT)
+#row.names(read_countsT) <- t_cellNames
+colnames(read_countsT) <- "counts"
+```
+
+how to plot? 
+```{r}
+ggplot(read_countsT, aes(x = counts)) + geom_density() # horrible
+ggplot(read_countsT, aes(x = "counts", y = counts)) + geom_point() # hmmm
+
+basicBox <- ggplot(read_countsT, aes(x = "counts", y = counts)) + geom_boxplot(width = 0.25) # horrible
+basicBox
+basicBox + scale_y_continuous(trans = 'log2') # a little better...
+advBox <- basicBox + scale_y_continuous(trans = 'log2') + ylim(0, 3000)
+advBox
+
+# can i get a violin in there? 
+advBox + geom_violin()
+```
+
+more plotting
+```{r}
+p <- ggplot(read_countsT, aes(x = "counts", y = counts))
+p + geom_boxplot(width = 0.25) + scale_y_continuous(trans = 'log2')
+p + geom_boxplot(width = 0.25) + scale_y_continuous(trans = 'log2') + ylim(0, 3000)
+p + geom_violin() + geom_boxplot(width = 0.25, fill = 'black', outlier.color = NA) + scale_y_continuous(trans = 'log2') + ylim(0, 3000) + stat_summary(fun.y=median, geom="point", fill="white", shape=21, size=2.5)
+```
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+BOTH ON SAME PLOT?
+
+append both to same df
+```{r}
+readCounts_df <- read_countsT
+colnames(readCounts_df) <- "tumorCounts"
+readCounts_df$healthyCounts <- NA
+readCounts_df$healthyCounts[1:409] <- read_countsH$counts
+readCounts_df$healthyCounts[410: 454] <- NA
+#row.names(readCounts_df) <- NA
+```
+
+need to reshape? 
+```{r}
+library(reshape2)
+
+meltData <- melt(readCounts_df)
+meltData <- meltData[1:863, ] # get rid of the NAs
+boxplot(data= meltData, value~variable) # works!!
+```
+
+plot
+```{r}
+p <- ggplot(meltData, aes(factor(variable), value))
+p + geom_boxplot() # works!!
+
+p + geom_boxplot(width = 0.25, fill = 'black', outlier.color = NA) + stat_summary(fun.y=median, geom="point", fill="white", shape=21, size=2.5)
+
+pdf("fusion_read_counts_boxplot.pdf", 10, 10)
+p + geom_boxplot(width = 0.25, fill = 'black', outlier.color = NA) + scale_y_continuous(trans = 'log2') + stat_summary(fun.y=median, geom="point", fill="white", shape=21, size=2.5)
+dev.off()
+
+p + geom_boxplot(width = 0.25, fill = 'black', outlier.color = NA) + scale_y_continuous(trans = 'log2') + ylim(0, 3000) + stat_summary(fun.y=median, geom="point", fill="white", shape=21, size=2.5)
+```
+
+hmmm...ok looks like the read count values are almost the same...
+```{r}
+hc_indices <- which(meltData$variable == "healthyCounts")
+ave(meltData$value[hc_indices])[1]
+
+tc_indices <- which(meltData$variable == "tumorCounts")
+ave(meltData$value[tc_indices])[1]
+```
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+SAME THING, BUT FOR RAW FUSION COUNTS
+
+append both to same df
+```{r}
+rawCounts_df <- as.data.frame(raw_countsT)
+colnames(rawCounts_df) <- "tumorCounts"
+rawCounts_df$healthyCounts <- NA
+rawCounts_df$healthyCounts[1:409] <- raw_countsH
+rawCounts_df$healthyCounts[410: 454] <- NA
+```
+
+need to reshape? 
+```{r}
+library(reshape2)
+
+meltData_raw <- melt(rawCounts_df)
+meltData_raw <- meltData_raw[1:863, ] # get rid of the NAs
+boxplot(data= meltData_raw, value~variable) # works!!
+```
+
+plot
+```{r}
+p1 <- ggplot(meltData_raw, aes(factor(variable), value))
+p1 + geom_boxplot() # works!!
+
+p1 + geom_boxplot(width = 0.25, fill = 'black', outlier.color = NA) + stat_summary(fun.y=median, geom="point", fill="white", shape=21, size=2.5)
+
+pdf("fusion_raw_counts_boxplot.pdf", 10, 10)
+p1 + geom_boxplot(width = 0.25, fill = 'black', outlier.color = NA) + scale_y_continuous(trans = 'log2') + stat_summary(fun.y=median, geom="point", fill="white", shape=21, size=2.5)
+dev.off()
+
+p1 + geom_boxplot(width = 0.25, fill = 'black', outlier.color = NA) + scale_y_continuous(trans = 'log2') + ylim(0, 3000) + stat_summary(fun.y=median, geom="point", fill="white", shape=21, size=2.5)
+```
+

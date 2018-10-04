@@ -1,0 +1,39 @@
+---
+title: "search_for_GOI.Rmd"
+author: Lincoln
+date: 8.23.18
+output: html_document
+
+Would be easier if I moved this script into the dir containing the tsvs
+---
+
+```{r}
+setwd("/home/rstudio/01-STARfusion_R_manipulation/")
+```
+
+get cell list
+```{r}
+cells <- list.files(path = ".", pattern = ".tsv")
+```
+
+define fusions to search for
+```{r}
+t <- "CCL22--CD74"
+q <- "ALK--EML4"
+q1 <- "EML4--ALK"
+```
+
+for it up 
+```{r}
+for(cell in cells){
+  df <- read.csv(cell, sep = "\t", header = T)
+  cFus <- which(df$X.FusionName == q)
+  if(length(cFus) > 0){
+    print(cell)
+  }
+}
+```
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
