@@ -9,3 +9,6 @@ state*
 
 # python cache
 __pycache__
+
+# fastq test files
+*.fastq*

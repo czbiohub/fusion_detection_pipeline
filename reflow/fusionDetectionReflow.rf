@@ -1,0 +1,66 @@
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+// script: fusionDetectionReflow.rf
+// authors: Lincoln Harris
+// date: 10.19.18
+// 
+// This script implements my existing fusion detection pipeline in Reflow
+//
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+
+// command line params
+param (
+	// s3 path to R1 fastq file
+	read1_fq string
+	// s3 path to R1 fastq file
+	read2_fq string
+	// name of the current cell
+	sample_id string
+	// output directory full s3 path
+	output_dir string
+	// how many threads to execute STARfus with
+	threads = 6
+)
+
+// Declare GLOBAL variables
+val files = make("$/files")
+val dirs = make("$/dirs")
+val strings = make("$/strings")
+val star = "trinityctat/ctatfusion"
+
+// Decompress()
+//		Untar the genome_build tarball
+func Decompress(tgz file) = // this guy has tar cmds, right? 
+	exec(image := star) (output dir) {" 
+		tar xvf {{tgz}} -C {{output}}
+	"}
+
+// GetGenomeBuild()
+//		Pull down this effing genome build that for SOME REASON isnt included in the docker image
+func GetGenomeBuild(sample_id string) = // funcArg as dummy variable? 
+	exec(image := star) (outFile file) {"
+		wget https://data.broadinstitute.org/Trinity/CTAT_RESOURCE_LIB/GRCh37_v19_CTAT_lib_Feb092018.plug-n-play.tar.gz
+	"}
+
+// StarFusion()
+//		Run STAR-Fusion function 
+func StarFusion(fq1, fq2, gBuildDecomp, sample_id string) dir = {
+
+	d := dirs.Make([sample_id + "_R1.fq.gz": fq1, sample_id + "_R2.fq.gz" : fq2])
+
+	exec(image := star, cpu := threads, mem := 16*GiB) (outDir dir) {"
+		star /usr/local/src/STAR-Fusion/STAR-Fusion --left_fq {{d}}/{{fq1}} --right_fq {{d}}/{{fq2}} --genome_lib_dir {{gBuildDecomp}} -O {{outDir}} --FusionInspector validate --examine_coding_effect --denovo_reconstruct --CPU {{threads}}
+	"}
+}
+
+val fq1 = file(read1_fq) // initialized as a string, need to convert to file
+val fq2 = file(read2_fq) // initialized as a string, need to convert to file
+val gBuildComp = GetGenomeBuild(sample_id) // really dont need to pass in anything here...
+val gBuildDecomp = Decompress(gBuildComp)
+
+starOutDir := StarFusion(fq1, fq2, gBuildDecomp, sample_id)
+
+// Main()
+@requires(cpu := 2, mem := 4*GiB)
+val Main = dirs.Copy(starOutDir, output_dir) // output_dir is specified as a cmd line param
