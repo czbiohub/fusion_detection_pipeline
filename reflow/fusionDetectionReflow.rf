@@ -45,12 +45,16 @@ func GetGenomeBuild(sample_id string) = // funcArg as dummy variable?
 
 // StarFusion()
 //		Run STAR-Fusion function 
-func StarFusion(fq1, fq2, gBuildDecomp, sample_id string) dir = {
-
+func StarFusion(fq1 file, fq2 file, gBuildDecomp dir, sample_id string) dir = {
+	
 	d := dirs.Make([sample_id + "_R1.fq.gz": fq1, sample_id + "_R2.fq.gz" : fq2])
 
 	exec(image := star, cpu := threads, mem := 16*GiB) (outDir dir) {"
-		star /usr/local/src/STAR-Fusion/STAR-Fusion --left_fq {{d}}/{{fq1}} --right_fq {{d}}/{{fq2}} --genome_lib_dir {{gBuildDecomp}} -O {{outDir}} --FusionInspector validate --examine_coding_effect --denovo_reconstruct --CPU {{threads}}
+		star /usr/local/src/STAR-Fusion/STAR-Fusion \
+		--left_fq {{d}}/{{fq1}} --right_fq {{d}}/{{fq2}} \
+		--genome_lib_dir {{gBuildDecomp}} -O {{outDir}} \
+		--FusionInspector validate --examine_coding_effect \
+		--denovo_reconstruct --CPU {{threads}}
 	"}
 }
 
