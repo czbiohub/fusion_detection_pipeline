@@ -11,12 +11,12 @@
 
 // command line params
 param (
-	// s3 path to R1 fastq file
-	read1_fq string
-	// s3 path to R1 fastq file
-	read2_fq string
 	// name of the current cell
 	sample_id string
+	// s3 path to R1 fastq file
+	input_fq1 string
+	// s3 path to R1 fastq file
+	input_fq2 string
 	// output directory full s3 path
 	output_dir string
 	// how many threads to execute STARfus with
@@ -54,8 +54,8 @@ func StarFusion(fq1 file, fq2 file, gBuildDecomp dir, sample_id string) dir = {
 	"}
 }
 
-val fq1 = file(read1_fq) // initialized as a string, need to convert to file
-val fq2 = file(read2_fq) // initialized as a string, need to convert to file
+val fq1 = file(input_fq1) // initialized as a string, need to convert to file
+val fq2 = file(input_fq2) // initialized as a string, need to convert to file
 val gBuildComp = GetGenomeBuild(sample_id) // passing in dummy variable here
 val gBuildDecomp = Decompress(gBuildComp)
 
