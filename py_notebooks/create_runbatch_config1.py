@@ -1,4 +1,3 @@
-
 #////////////////////////////////////////////////////////////////////
 #////////////////////////////////////////////////////////////////////
 # script: create_runbatch_config.py
@@ -15,9 +14,11 @@ import pandas as pd
 pd.options.display.max_colwidth = 500 # module config? 
 pd.options.mode.chained_assignment = None  # disable warning message? -- really shouldnt be doing this...
 
+#////////////////////////////////////////////////////////////////////
 # writeFunc()
 #	Write both samples.csv and config output files
 #
+#////////////////////////////////////////////////////////////////////
 def writeFunc(samples_df):
 	# where do you want to write it? 
 	out_dir = '../STAR_fus/test'
@@ -35,9 +36,11 @@ def writeFunc(samples_df):
     # check to see how it looks
 	#get_ipython().system(' head -n 3 $out_dir/samples.csv $out_dir/config.json')
 
+#////////////////////////////////////////////////////////////////////
 # get_fastqs_R1()
 #      get full s3 paths for fastq file (R1), then add them to a new col in cells_df
 # 
+#////////////////////////////////////////////////////////////////////
 def get_fastqs_R1(cell):
 	s3_location = f'{prefix}{cell}' #f? 
 	lines = get_ipython().getoutput('aws s3 ls $s3_location')
@@ -48,9 +51,11 @@ def get_fastqs_R1(cell):
 	except IndexError:
 		return
     
+#////////////////////////////////////////////////////////////////////
 # get_fastqs_R2()
 #	get full s3 paths for fastq file (R2), then add them to a new col in cells_df
 #
+#////////////////////////////////////////////////////////////////////
 def get_fastqs_R2(cell):
 	s3_location = f'{prefix}{cell}' #f? 
 	lines = get_ipython().getoutput('aws s3 ls $s3_location')
@@ -61,11 +66,13 @@ def get_fastqs_R2(cell):
 	except IndexError:
 		return
 
+#////////////////////////////////////////////////////////////////////
 # driver()
 #     Gets cell names given a prefix, and sets up dataframe
 #
+#////////////////////////////////////////////////////////////////////
 def driver(prefix): 
-     
+
     # get all of the cells in a given run directory
 	txt = 'runX_cells.txt'
 	get_ipython().system(' aws s3 ls $prefix > $txt')
@@ -98,9 +105,11 @@ def driver(prefix):
 
 	return samples_df
 
+#////////////////////////////////////////////////////////////////////
 # main()
-#	Main logic here. Faster way to do this than mega for loop??
-#
+#	Main logic here. THIS WOULD HAVE BEEN MUCH MORE EFFICIENT WITH A PD.MAP() CALL!!
+#					NO MORE FOR LOOPS WHEN PANDAS IS INVOLVED!!
+#////////////////////////////////////////////////////////////////////
 
 bucketPrefixes = 's3://darmanis-group/singlecell_lungadeno/nonImmune_fastqs_9.27/'
 f = 'myCells.txt'
