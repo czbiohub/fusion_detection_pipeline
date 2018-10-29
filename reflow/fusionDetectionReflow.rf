@@ -39,7 +39,7 @@ func GetGenomeBuild(sample_id string) = // funcArg as dummy variable?
 // Decompress()
 //		Untar the genome_build tarball
 func Decompress(tgz file) =
-	exec(image := star, cpu := threads, mem := 4*GiB) (output dir) {" 
+	exec(image := star, cpu := threads, mem := 8*GiB) (output dir) {" 
 		tar xvf {{tgz}} -C {{output}}
 	"}
 
@@ -49,20 +49,14 @@ func StarFusion(fq1 file, fq2 file, gBuildDecomp dir, sample_id string) dir = {
 	
 	d := dirs.Make([sample_id + "_R1.fq.gz": fq1, sample_id + "_R2.fq.gz" : fq2])
 
-	exec(image := star, cpu := threads, mem := 16*GiB) (outDir dir) {"
-		star /usr/local/src/STAR-Fusion/STAR-Fusion \
-		--left_fq {{d}}/{{fq1}} --right_fq {{d}}/{{fq2}} \
-		--genome_lib_dir {{gBuildDecomp}} -O {{outDir}} \
-		--FusionInspector validate --examine_coding_effect \
-		--denovo_reconstruct --CPU {{threads}}
+	exec(image := star, cpu := threads, mem :=64*GiB) (outDir dir) {"
+		/usr/local/src/STAR-Fusion/STAR-Fusion --left_fq {{d}}/{{sample_id}}_R1.fq.gz --right_fq {{d}}/{{sample_id}}_R2.fq.gz --genome_lib_dir {{gBuildDecomp}}/GRCh37_v19_CTAT_lib_Feb092018/ctat_genome_lib_build_dir/ -O {{outDir}} --FusionInspector validate --examine_coding_effect --denovo_reconstruct --CPU {{threads}}
 	"}
 }
 
 val fq1 = file(read1_fq) // initialized as a string, need to convert to file
 val fq2 = file(read2_fq) // initialized as a string, need to convert to file
 val gBuildComp = GetGenomeBuild(sample_id) // passing in dummy variable here
-//val gBuildCompFile = file(gBuildComp + ".tar.gz") // what if i explicitly make this thing a file? 
-//val gBuildComp1 = file(gBuildComp)
 val gBuildDecomp = Decompress(gBuildComp)
 
 starOutDir := StarFusion(fq1, fq2, gBuildDecomp, sample_id)
