@@ -16,7 +16,7 @@ pd.options.display.max_colwidth = 500 # module config?
 pd.options.mode.chained_assignment = None  # disable warning message? -- really shouldnt be doing this...
 
 # writeFunc()
-#	TODO: ADD DESCRIPTION
+#	Write both samples.csv and config output files
 #
 def writeFunc(samples_df):
 	# where do you want to write it? 
@@ -30,10 +30,10 @@ def writeFunc(samples_df):
 		"runs_file": "samples.csv"
 	}
 	# dump config file
-	with open(f'{out_dir}/config.json', 'w') as f:
-		json.dump(config, f)
+	#with open(f'{out_dir}/config.json', 'w') as f:
+	#	json.dump(config, f)
     # check to see how it looks
-	get_ipython().system(' head -n 3 $out_dir/samples.csv $out_dir/config.json')
+	#get_ipython().system(' head -n 3 $out_dir/samples.csv $out_dir/config.json')
 
 # get_fastqs_R1()
 #      get full s3 paths for fastq file (R1), then add them to a new col in cells_df
@@ -83,7 +83,7 @@ def driver(prefix):
 	cells_df['sample_id'] = cells_df.cell_name.str.strip('/') # getting rid of the forward slashes
     
     # building the output dir string
-	cells_df['output_prefix'] = 's3://darmanis-group/singlecell_lungadeno/nonImmune_fastqs_9.27/STAR-fus_out/' + cells_df.sample_id
+	cells_df['output_prefix'] = 's3://darmanis-group/singlecell_lungadeno/nonImmune_fastqs_9.27/STAR-fus_out/' + cells_df.sample_id + '/'
     
     # subset cells_df by only what we want
 	cols_to_keep = ['sample_id', 'input_fq_1', 'input_fq_2', 'output_prefix']
@@ -99,7 +99,7 @@ def driver(prefix):
 	return samples_df
 
 # main()
-#	TODO: ADD DESCRIPTION
+#	Main logic here. Faster way to do this than mega for loop??
 #
 
 bucketPrefixes = 's3://darmanis-group/singlecell_lungadeno/nonImmune_fastqs_9.27/'
