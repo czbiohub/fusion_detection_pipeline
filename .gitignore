@@ -12,3 +12,6 @@ __pycache__
 
 # fastq test files
 *.fastq*
+
+# ignore this batch log file
+batch.log
