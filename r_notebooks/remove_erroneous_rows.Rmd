@@ -1,0 +1,31 @@
+---
+title: "Untitled"
+author: "slinkly linc"
+date: "12/13/2018"
+output: html_document
+---
+
+read in 
+```{r}
+samples <- read.csv('/Users/lincoln.harris/code/fusion_detection_pipeline/STAR_fus/12.10_run/samples.csv')
+```
+
+missing some of these bois...
+```{r}
+length(unique(samples$input_fq1))
+length(unique(samples$input_fq2))
+```
+
+```{r}
+r_missing_1 <- which(samples$input_fq1 == '')
+r_missing_2 <- which(samples$input_fq2 == '')
+```
+
+```{r}
+samples_alt <- samples[-c(r_missing_1, r_missing_2),]
+```
+
+```{r}
+write.csv(samples_alt, '/Users/lincoln.harris/code/fusion_detection_pipeline/STAR_fus/12.10_run/samples_alt.cs', row.names = F, quote = F)
+```
+
