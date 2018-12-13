@@ -21,7 +21,7 @@ pd.options.mode.chained_assignment = None  # disable warning message? -- really 
 #////////////////////////////////////////////////////////////////////
 def writeFunc(samples_df):
 	# where do you want to write it? 
-	out_dir = '../STAR_fus/test'
+	out_dir = '../STAR_fus/12.10_run'
 	# write samples_df to file
 	get_ipython().system(' mkdir -p $out_dir')
 	samples_df.to_csv(f'{out_dir}/samples.csv', index=False)
@@ -30,11 +30,6 @@ def writeFunc(samples_df):
 		"program": "../../reflow/fusionDetectionReflow.rf",
 		"runs_file": "samples.csv"
 	}
-	# dump config file
-	#with open(f'{out_dir}/config.json', 'w') as f:
-	#	json.dump(config, f)
-    # check to see how it looks
-	#get_ipython().system(' head -n 3 $out_dir/samples.csv $out_dir/config.json')
 
 #////////////////////////////////////////////////////////////////////
 # get_fastqs_R1()
@@ -45,7 +40,7 @@ def get_fastqs_R1(cell):
 	s3_location = f'{prefix}{cell}' #f? 
 	lines = get_ipython().getoutput('aws s3 ls $s3_location')
 	try:
-		fq_line = [x for x in lines if x.endswith('R1_001.fastq.gz')][0] # get the R1 fastq files
+		fq_line = [x for x in lines if x.endswith(('R1_001.fastq.gz','R1_001_merged.fastq.gz'))][0] # get the R1 fastq files
 		fq_basename = fq_line.split()[-1]
 		return f'{s3_location}{fq_basename}'
 	except IndexError:
@@ -60,7 +55,7 @@ def get_fastqs_R2(cell):
 	s3_location = f'{prefix}{cell}' #f? 
 	lines = get_ipython().getoutput('aws s3 ls $s3_location')
 	try:
-		fq_line = [x for x in lines if x.endswith('R2_001.fastq.gz')][0] # get the R2 fastq files
+		fq_line = [x for x in lines if x.endswith(('R2_001.fastq.gz','R2_001_merged.fastq.gz'))][0] # get the R2 fastq files
 		fq_basename = fq_line.split()[-1]
 		return f'{s3_location}{fq_basename}'
 	except IndexError:
@@ -90,7 +85,7 @@ def driver(prefix):
 	cells_df['sample_id'] = cells_df.cell_name.str.strip('/') # getting rid of the forward slashes
     
     # building the output dir string
-	cells_df['output_prefix'] = 's3://darmanis-group/singlecell_lungadeno/nonImmune_fastqs_9.27/STAR-fus_out/' + cells_df.sample_id + '/'
+	cells_df['output_prefix'] = 's3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/STAR-fus_out/' + cells_df.sample_id + '/'
     
     # subset cells_df by only what we want
 	cols_to_keep = ['sample_id', 'input_fq_1', 'input_fq_2', 'output_prefix']
@@ -111,7 +106,7 @@ def driver(prefix):
 #					NO MORE FOR LOOPS WHEN PANDAS IS INVOLVED!!
 #////////////////////////////////////////////////////////////////////
 
-bucketPrefixes = 's3://darmanis-group/singlecell_lungadeno/nonImmune_fastqs_9.27/'
+bucketPrefixes = 's3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/'
 f = 'myCells.txt'
 get_ipython().system(' aws s3 ls $bucketPrefixes > $f')
     
@@ -119,11 +114,11 @@ get_ipython().system(' aws s3 ls $bucketPrefixes > $f')
 runs_df = pd.read_table(f, delim_whitespace=True, header=None, names=['is_prefix', 'run_name'])
     
 # add a full_path col
-runs_df['full_path'] = 's3://darmanis-group/singlecell_lungadeno/nonImmune_fastqs_9.27/' + runs_df['run_name']
+runs_df['full_path'] = 's3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/' + runs_df['run_name']
     
 big_df = pd.DataFrame() # init empty dataframe
 
-for i in range(0, len(runs_df.index)-1):
+for i in range(0, len(runs_df.index)-2): # -2 to get rid of STAR-fus_out folder
 	global prefix # dont like this -- bad coding practice
 	prefix = runs_df['full_path'][i]
 	print(prefix)
