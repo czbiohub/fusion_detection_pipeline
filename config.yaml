@@ -1,0 +1,61 @@
+assoc: dynamodb,czbiohub-reflow-quickstart-cache
+cluster: ec2cluster
+ec2cluster:
+  ami: ami-4296ec3a
+  cloudconfig: {}
+  diskslices: 0
+  diskspace: 2500
+  disktype: gp2
+  instancetypes:
+  - c1.medium
+  - c1.xlarge
+  - c3.2xlarge
+  - c3.4xlarge
+  - c3.8xlarge
+  - c3.large
+  - c3.xlarge
+  - c4.2xlarge
+  - c4.4xlarge
+  - c4.8xlarge
+  - c4.large
+  - c4.xlarge
+  - c5.large
+  - c5.xlarge
+  - c5.2xlarge
+  - c5.4xlarge
+  - c5.9xlarge
+  - c5.18xlarge
+  - cc2.8xlarge
+  - m1.large
+  - m1.medium
+  - m1.small
+  - m1.xlarge
+  - m2.2xlarge
+  - m2.4xlarge
+  - m2.xlarge
+  - m3.2xlarge
+  - m3.large
+  - m3.medium
+  - m3.xlarge
+  - m4.16xlarge
+  - m5.24xlarge
+  - m4.4xlarge
+  - m4.xlarge
+  - r4.xlarge
+  - r4.16xlarge
+  - t1.micro
+  - t2.large
+  - t2.medium
+  - t2.micro
+  - t2.nano
+  - t2.small
+  keyname: ""
+  maxinstances: 25
+  region: us-west-2
+  securitygroup: sg-661d7f19
+  sshkey: |
+    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDjXgnYqNLsSXZSmQU53Hvm2tqkh/8MCVyecZfmcXC/8XcBBBhk3XRk/UEFMResM+P4i3izF9CPZ0dcqwuldizwstzsB6ZmbNWPBrRbyKFxmcQS0ICvcztVrsZmvQoaBYtqYJEAht/zZQGm+jqVg6ud+oxXx54/h8Vfhwcz07srb85VCs7X5PWhFMVkpc7mrIVUw6MzA+VaRt2PmNSP6GTeuj32cmRYilrLy1ceGmYEZmDUqwX1GmdIj7BsSPkZshz5Mme128BXMIwdWnJ+yy3P21DD1rbEv1JnDbVRdXoP/c1+6VG2DuikJCr/iLphUzoBJyAWRuj2IzHmVxPJztzuIWSYQl/lrmUGMa/MFX7UOEjZEEKWaFtAUStQ31AfV2RYgahfUHSb4x0KblDvPtdMhibmu2Quo1ZlV1Uc5e8xl238mhsVD1WZMvcpo7zrtHCaY+UbzB/yy1Yg4Hk7TfEMJVyZyWnr2hZ7P7S6g/tlOYEY8KJ6XC/uqYn7mMp7QZSfdWUpqA9YwvaUw5cKe+lTp4+tGVhktMW1HxVMzhF3UWDfxVQErOLKFk87ddEjZw/WaRITm1nwaJBVjvu/E1cR4AZ9LTtB7nv3PZ9srD7P0SkZDoi7x7RZiqwOVW0nmQT5s+VBd5rX0kgyTHoH2N1Fsdsw55XLURgcW9VIZx4Rmw== lincoln.harris@czbiohub.org
+https: httpsca,/home/ubuntu/.reflow/reflow.pem
+repository: s3,czbiohub-reflow-quickstart-cache
+user: local,ip-172-31-38-51@localhost
+user: local,lincoln@localhost

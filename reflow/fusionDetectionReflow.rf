@@ -20,7 +20,7 @@ param (
 	// output directory full s3 path
 	output_dir string
 	// how many threads to execute STARfus with
-	threads = 32
+	threads = 16
 )
 
 // Declare GLOBAL variables
@@ -32,14 +32,14 @@ val star = "trinityctat/ctatfusion"
 // GetGenomeBuild()
 //		Pull down this effing genome build that for SOME REASON isnt included in the docker image
 func GetGenomeBuild(sample_id string) = // funcArg as dummy variable? 
-	exec(image := star, cpu := threads, mem := 16*GiB) (outFile file) {"
+	exec(image := star, cpu := 4, mem := 8*GiB, disk := 50*GiB) (outFile file) {"
 		wget -O {{outFile}} https://data.broadinstitute.org/Trinity/CTAT_RESOURCE_LIB/GRCh37_v19_CTAT_lib_Feb092018.plug-n-play.tar.gz
 	"}
 
 // Decompress()
 //		Untar the genome_build tarball
 func Decompress(tgz file) =
-	exec(image := star, cpu := threads, mem := 8*GiB) (output dir) {" 
+	exec(image := star, cpu := 4, mem := 8*GiB) (output dir) {" 
 		tar xvf {{tgz}} -C {{output}}
 	"}
 
@@ -49,7 +49,7 @@ func StarFusion(fq1 file, fq2 file, gBuildDecomp dir, sample_id string) dir = {
 	
 	d := dirs.Make([sample_id + "_R1.fq.gz": fq1, sample_id + "_R2.fq.gz" : fq2])
 
-	exec(image := star, cpu := threads, mem :=64*GiB) (outDir dir) {"
+	exec(image := star, cpu := threads, mem :=64*GiB, disk := 50*GiB) (outDir dir) {"
 		/usr/local/src/STAR-Fusion/STAR-Fusion --left_fq {{d}}/{{sample_id}}_R1.fq.gz --right_fq {{d}}/{{sample_id}}_R2.fq.gz --genome_lib_dir {{gBuildDecomp}}/GRCh37_v19_CTAT_lib_Feb092018/ctat_genome_lib_build_dir/ -O {{outDir}} --FusionInspector validate --examine_coding_effect --denovo_reconstruct --CPU {{threads}}
 	"}
 }
@@ -62,7 +62,7 @@ val gBuildDecomp = Decompress(gBuildComp)
 starOutDir := StarFusion(fq1, fq2, gBuildDecomp, sample_id)
 
 // Main()
-@requires(cpu := 2, mem := 4*GiB)
+@requires(cpu := 2, mem := 4*GiB, disk := 1000*GiB)
 val Main = dirs.Copy(starOutDir, output_dir) // output_dir is specified as a cmd line param
 
 ////////////////////////////////////////////////////////////////////
