@@ -5,9 +5,4 @@
 # test -- run GATK reflow pipeline for a single cell. 
 #		need to specify full s3 paths here
 test:
-	reflow run fusionDetectionReflow.rf -read1_fq=s3://darmanis-group/singlecell_lungadeno/nonImmune_fastqs_9.27/180226/C3_1001000403/C3_1001000403_S123_R1_001.fastq.gz -read2_fq=s3://darmanis-group/singlecell_lungadeno/nonImmune_fastqs_9.27/180226/C3_1001000403/C3_1001000403_S123_R2_001.fastq.gz -sample_id=C3_1001000403 -output_dir=s3://darmanis-group/singlecell_lungadeno/nonImmune_fastqs_9.27/180226/C3_1001000403/fusionPipelineOut/
-
-# test1
-#	just turning off the cache. Will this do anything? 
-test1:
-	reflow -cache=off run fusionDetectionReflow.rf -read1_fq=s3://darmanis-group/singlecell_lungadeno/nonImmune_fastqs_9.27/180226/C3_1001000403/C3_1001000403_S123_R1_001.fastq.gz -read2_fq=s3://darmanis-group/singlecell_lungadeno/nonImmune_fastqs_9.27/180226/C3_1001000403/C3_1001000403_S123_R2_001.fastq.gz -sample_id=C3_1001000403 -output_dir=s3://darmanis-group/singlecell_lungadeno/nonImmune_fastqs_9.27/180226/C3_1001000403/fusionPipelineOut/
+	reflow run fusionDetectionReflow.rf -read1_fq=s3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/170125/A10_1001000293/A10_1001000293_R1_001.fastq.gz -read2_fq=s3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/170125/A10_1001000293/A10_1001000293_R2_001.fastq.gz -sample_id=A10_1001000293 -output_dir=s3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/STAR-fus_out/A10_1001000293/
