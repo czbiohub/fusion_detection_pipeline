@@ -28,6 +28,7 @@ val files = make("$/files")
 val dirs = make("$/dirs")
 val strings = make("$/strings")
 val star = "trinityctat/ctatfusion"
+val CTAT = "s3://darmanis-group/singlecell_lungadeno/GRCh37_v19_CTAT_lib_Feb092018.plug-n-play.tar.gz"
 
 // GetGenomeBuild()
 //		Pull down this effing genome build that for SOME REASON isnt included in the docker image
@@ -39,7 +40,7 @@ func GetGenomeBuild(sample_id string) = // funcArg as dummy variable?
 // Decompress()
 //		Untar the genome_build tarball
 func Decompress(tgz file) =
-	exec(image := star, cpu := 4, mem := 8*GiB) (output dir) {" 
+	exec(image := star, cpu := 4, mem := 8*GiB, disk := 50*GiB) (output dir) {" 
 		tar xvf {{tgz}} -C {{output}}
 	"}
 
@@ -56,7 +57,8 @@ func StarFusion(fq1 file, fq2 file, gBuildDecomp dir, sample_id string) dir = {
 
 val fq1 = file(input_fq1) // initialized as a string, need to convert to file
 val fq2 = file(input_fq2) // initialized as a string, need to convert to file
-val gBuildComp = GetGenomeBuild(sample_id) // passing in dummy variable here
+//val gBuildComp = GetGenomeBuild(sample_id) // passing in dummy variable here
+val gBuildComp = file(CTAT)
 val gBuildDecomp = Decompress(gBuildComp)
 
 starOutDir := StarFusion(fq1, fq2, gBuildDecomp, sample_id)
