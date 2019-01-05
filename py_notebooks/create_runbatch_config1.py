@@ -24,7 +24,7 @@ def writeFunc(samples_df):
 	out_dir = '../STAR_fus/12.10_run'
 	# write samples_df to file
 	get_ipython().system(' mkdir -p $out_dir')
-	samples_df.to_csv(f'{out_dir}/samples.csv', index=False)
+	samples_df.to_csv('testOut.csv', index=False)
 	# write a config file
 	config =     {
 		"program": "../../reflow/fusionDetectionReflow.rf",
@@ -37,12 +37,13 @@ def writeFunc(samples_df):
 # 
 #////////////////////////////////////////////////////////////////////
 def get_fastqs_R1(cell):
-	s3_location = f'{prefix}{cell}' #f? 
+	s3_location = prefix + cell 
 	lines = get_ipython().getoutput('aws s3 ls $s3_location')
 	try:
 		fq_line = [x for x in lines if x.endswith(('R1_001.fastq.gz','R1_001_merged.fastq.gz'))][0] # get the R1 fastq files
 		fq_basename = fq_line.split()[-1]
-		return f'{s3_location}{fq_basename}'
+		retStr = s3_location + fq_basename
+		return retStr
 	except IndexError:
 		return
     
@@ -52,12 +53,13 @@ def get_fastqs_R1(cell):
 #
 #////////////////////////////////////////////////////////////////////
 def get_fastqs_R2(cell):
-	s3_location = f'{prefix}{cell}' #f? 
+	s3_location = prefix + cell 
 	lines = get_ipython().getoutput('aws s3 ls $s3_location')
 	try:
 		fq_line = [x for x in lines if x.endswith(('R2_001.fastq.gz','R2_001_merged.fastq.gz'))][0] # get the R2 fastq files
 		fq_basename = fq_line.split()[-1]
-		return f'{s3_location}{fq_basename}'
+		retStr = s3_location + fq_basename
+		return retStr
 	except IndexError:
 		return
 
@@ -118,7 +120,7 @@ runs_df['full_path'] = 's3://darmanis-group/singlecell_lungadeno/non_immune/nonI
     
 big_df = pd.DataFrame() # init empty dataframe
 
-for i in range(0, len(runs_df.index)-2): # -2 to get rid of STAR-fus_out folder
+for i in range(0, len(runs_df.index)-1): # -2 to get rid of STAR-fus_out folder
 	global prefix # dont like this -- bad coding practice
 	prefix = runs_df['full_path'][i]
 	print(prefix)
