@@ -15,3 +15,12 @@ __pycache__
 
 # ignore this batch log file
 batch.log
+
+# CTAT lib
+GRCh37_v19_CTAT_lib_Feb092018.plug-n-play.tar.gz
+ctat_genome_lib_build_dir   
+GRCh37_v19_CTAT_lib_Feb092018
+
+# Star-Fus out
+StarFusionOut
+STARFusionOut

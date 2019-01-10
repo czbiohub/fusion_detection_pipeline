@@ -136,7 +136,7 @@ for i in range(0, len(runs_df.index)):
 	currCells = getCellTable(prefix)
 
 	print('creating pool')
-	p = mp.Pool(processes=mp.cpu_count()-4)
+	p = mp.Pool(processes=mp.cpu_count() / 4)
 
 	num_partitions = len(currCells.index)
 	currCells_split = np.array_split(currCells, num_partitions) # split df into X partitions
