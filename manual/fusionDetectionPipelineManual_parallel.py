@@ -98,7 +98,7 @@ def runTrinity(row):
 	outDir = '/data/StarFusionOut/' + cell + '_out'
 	
 	# run STAR-fus, from docker container
-	get_ipython().system('sudo docker run -v `pwd`:/data --rm trinityctat/ctatfusion /usr/local/src/STAR-Fusion/STAR-Fusion --left_fq $fq_str_1 --right_fq $fq_str_2 --genome_lib_dir /data/ctat_genome_lib_build_dir -O $outDir --FusionInspector validate --examine_coding_effect --denovo_reconstruct --CPU 1')
+	get_ipython().system('sudo docker run -v `pwd`:/data --rm trinityctat/ctatfusion /usr/local/src/STAR-Fusion/STAR-Fusion --left_fq $fq_str_1 --right_fq $fq_str_2 --genome_lib_dir /data/ctat_genome_lib_build_dir -O $outDir --FusionInspector validate --STAR_use_shared_memory --examine_coding_effect --denovo_reconstruct --CPU 1')
 
 	# copy output back up to s3!!
 	#get_ipython().system('aws s3 cp ./StarFusionOut/${cell}_out s3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/StarFusionOut_manual/$cell --recursive')
@@ -109,6 +109,8 @@ def runTrinity(row):
 
 	# clean up -- remove current StarFusionOut dir
 	#get_ipython().system('sudo rm -rf StarFusionOut/$cell')
+
+	return('finished!') # maybe i need a return statement here!
 
 #////////////////////////////////////////////////////////////////////
 # main()
@@ -141,10 +143,11 @@ for i in range(0, len(runs_df.index)):
 	num_partitions = len(currCells.index)
 	currCells_split = np.array_split(currCells, num_partitions) # split df into X partitions
 
-	p.map(runTrinity, currCells_split)
-	
-	p.close()
-	p.join()
+	try: 
+		outList = p.map(runTrinity, currCells_split)
+	finally:
+		p.close()
+		p.join()
 
 	# clean up -- again 
 	#get_ipython().system('sudo rm -rf StarFusionOut')
