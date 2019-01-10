@@ -93,15 +93,21 @@ def runTrinity(row):
 	get_ipython().system('aws s3 cp $fq1 .')
 	get_ipython().system('aws s3 cp $fq2 .')
 
+	fq_str_1 = '/data/' + cell + '_R1_001.fastq.gz'
+	fq_str_2 = '/data/' + cell + '_R2_001.fastq.gz'
+
+	#get_ipython().system('echo $fq_str_1')
+	#get_ipython().system('echo $fq_str_2')
+	
 	# run STAR-fus, from docker container
-	get_ipython().system('sudo docker run -v `pwd`:/data --rm trinityctat/ctatfusion /usr/local/src/STAR-Fusion/STAR-Fusion --left_fq /data/$cell_R1_001.fastq.gz --right_fq /data/$cell_R2_001.fastq.gz --genome_lib_dir /data/ctat_genome_lib_build_dir -O /data/StarFusionOut/$cell --FusionInspector validate --examine_coding_effect --denovo_reconstruct --CPU 1')
+	get_ipython().system('sudo docker run -v `pwd`:/data --rm trinityctat/ctatfusion /usr/local/src/STAR-Fusion/STAR-Fusion --left_fq $fq_str_1 --right_fq $fq_str_2 --genome_lib_dir /data/ctat_genome_lib_build_dir -O /data/StarFusionOut/$cell --FusionInspector validate --examine_coding_effect --denovo_reconstruct --CPU 1')
 
 	# copy output back up to s3!!
-	get_ipython().system('aws s3 cp StarFusionOut/$cell s3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/StarFusionOut_manual/$cell/ --recursive')
+	#get_ipython().system('aws s3 cp StarFusionOut/$cell s3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/StarFusionOut_manual/$cell/ --recursive')
 
 	# remove current fastqs
-	get_ipython().system('rm ${cell}_R1_001.fastq.gz')
-	get_ipython().system('rm ${cell}_R2_001.fastq.gz')
+	#get_ipython().system('rm ${cell}_R1_001.fastq.gz')
+	#get_ipython().system('rm ${cell}_R2_001.fastq.gz')
 
 	# remove current StarFusionOut dir
 	#get_ipython().system('rm -rf StarFusionOut/$cell')
