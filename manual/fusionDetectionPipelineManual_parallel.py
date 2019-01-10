@@ -90,7 +90,7 @@ def runTrinity(row):
 	get_ipython().system('aws s3 cp $fq2 .')
 
 	# run STAR-fus, from docker container
-	get_ipython().system('sudo docker run -v `pwd`:/data --rm trinityctat/ctatfusion /usr/local/src/STAR-Fusion/STAR-Fusion --left_fq /data/*_R1_001.fastq.gz --right_fq /data/*_R2_001.fastq.gz --genome_lib_dir /data/ctat_genome_lib_build_dir -O /data/StarFusionOut/$cell --FusionInspector validate --examine_coding_effect --denovo_reconstruct')
+	get_ipython().system('sudo docker run -v `pwd`:/data --rm trinityctat/ctatfusion /usr/local/src/STAR-Fusion/STAR-Fusion --left_fq /data/*_R1_001.fastq.gz --right_fq /data/*_R2_001.fastq.gz --genome_lib_dir /data/ctat_genome_lib_build_dir -O /data/StarFusionOut/$cell --FusionInspector validate --examine_coding_effect --denovo_reconstruct --CPU 1')
 
 	# copy output back up to s3!!
 	get_ipython().system('aws s3 cp StarFusionOut/$cell s3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/StarFusionOut_manual/$cell/ --recursive')
@@ -117,7 +117,7 @@ runs_df = pd.read_table(f, delim_whitespace=True, header=None, names=['is_prefix
 # add a full_path col
 runs_df['full_path'] = 's3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/' + runs_df['run_name']
 
-for i in range(0, len(runs_df.index)-1): # -1 here? 
+for i in range(0, len(runs_df.index)):
 	global prefix # dont like this
 	prefix = runs_df['full_path'][i]
 	print(prefix)
@@ -126,17 +126,13 @@ for i in range(0, len(runs_df.index)-1): # -1 here?
 	print('creating pool')
 	p = mp.Pool(processes=12)
 
-	try:
-		#cells_list = p.map(getGeneCellMutCounts, fNames, chunksize=1) # default chunksize=1
-		num_partitions = currCells.index - 1
-		currCells_split = np.array_split(currCells, num_partitions)
-		p.map(runTrinity, currCells_split)
-	finally:
-		p.close()
-		p.join()
-
-
-	#currCells.apply(runTrinity, axis=1) # send the currCell df to runTrinity func
+	num_partitions = len(currCells.index)
+	currCells_split = np.array_split(currCells, 12) # split df into 12 partitions
+	#print(currCells_split)
+	p.map(runTrinity, currCells_split)
+	
+	p.close()
+	p.join()
 
 #////////////////////////////////////////////////////////////////////
 #////////////////////////////////////////////////////////////////////
