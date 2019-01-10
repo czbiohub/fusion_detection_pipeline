@@ -95,19 +95,20 @@ def runTrinity(row):
 
 	fq_str_1 = '/data/' + cell + '_R1_001.fastq.gz'
 	fq_str_2 = '/data/' + cell + '_R2_001.fastq.gz'
+	outDir = '/data/StarFusionOut/' + cell + '_out'
 	
 	# run STAR-fus, from docker container
-	get_ipython().system('sudo docker run -v `pwd`:/data --rm trinityctat/ctatfusion /usr/local/src/STAR-Fusion/STAR-Fusion --left_fq $fq_str_1 --right_fq $fq_str_2 --genome_lib_dir /data/ctat_genome_lib_build_dir -O /data/StarFusionOut/$cell --FusionInspector validate --examine_coding_effect --denovo_reconstruct --CPU 1')
+	get_ipython().system('sudo docker run -v `pwd`:/data --rm trinityctat/ctatfusion /usr/local/src/STAR-Fusion/STAR-Fusion --left_fq $fq_str_1 --right_fq $fq_str_2 --genome_lib_dir /data/ctat_genome_lib_build_dir -O $outDir --FusionInspector validate --examine_coding_effect --denovo_reconstruct --CPU 1')
 
 	# copy output back up to s3!!
-	get_ipython().system('aws s3 cp StarFusionOut/$cell s3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/StarFusionOut_manual/$cell/ --recursive')
+	#get_ipython().system('aws s3 cp ./StarFusionOut/${cell}_out s3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/StarFusionOut_manual/$cell --recursive')
 
 	# clean up -- remove current fastqs
-	get_ipython().system('rm ${cell}_R1_001.fastq.gz')
-	get_ipython().system('rm ${cell}_R2_001.fastq.gz')
+	#get_ipython().system('rm ${cell}_R1_001.fastq.gz')
+	#get_ipython().system('rm ${cell}_R2_001.fastq.gz')
 
 	# clean up -- remove current StarFusionOut dir
-	get_ipython().system('sudo rm -rf StarFusionOut/$cell')
+	#get_ipython().system('sudo rm -rf StarFusionOut/$cell')
 
 #////////////////////////////////////////////////////////////////////
 # main()
@@ -135,7 +136,7 @@ for i in range(0, len(runs_df.index)):
 	currCells = getCellTable(prefix)
 
 	print('creating pool')
-	p = mp.Pool(processes=mp.cpu_count()-8)
+	p = mp.Pool(processes=mp.cpu_count()-4)
 
 	num_partitions = len(currCells.index)
 	currCells_split = np.array_split(currCells, num_partitions) # split df into X partitions
@@ -146,8 +147,8 @@ for i in range(0, len(runs_df.index)):
 	p.join()
 
 	# clean up -- again 
-	get_ipython().system('sudo rm -rf StarFusionOut')
-	get_ipython().system('rm *fastq*')
+	#get_ipython().system('sudo rm -rf StarFusionOut')
+	#get_ipython().system('rm *fastq*')
 
 #////////////////////////////////////////////////////////////////////
 #////////////////////////////////////////////////////////////////////
