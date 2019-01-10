@@ -21,4 +21,3 @@
                            PRE 180911/
                            PRE 181120/
                            PRE STAR-fus_out/
-                           PRE StarFusionOut_manual/
