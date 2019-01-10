@@ -128,3 +128,8 @@ export PATH=$PATH:/home/ubuntu/bowtie2-2.3.4-linux-x86_64
 ulimit -u unlimited
 ulimit -n 9000
 ulimit -v 31225122848
+
+# STAR path
+export PATH=$PATH:/home/ubuntu/expansionVol/test/STAR-2.6.1a/source
+export PATH=$PATH:/home/ubuntu/expansionVol/test/STAR-Fusion-v1.5.0
+
