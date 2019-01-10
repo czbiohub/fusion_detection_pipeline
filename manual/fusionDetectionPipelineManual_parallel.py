@@ -81,22 +81,30 @@ def getCellTable(prefix):
 #////////////////////////////////////////////////////////////////////
 
 def runTrinity(row):
-	fq1 = row['input_fastq1']
-	fq2 = row['input_fastq2']
-	cell = row['sample_id']
+	fq1_raw = row['input_fastq1'].to_string() # these will all be series -- need to convert to strings
+	fq2_raw = row['input_fastq2'].to_string()
+	cell_raw = row['sample_id'].to_string()
+
+	fq1 = fq1_raw.split()[1] # then strip extraneous characters
+	fq2 = fq2_raw.split()[1]
+	cell = cell_raw.split()[1]
 
 	# get current fastqs
 	get_ipython().system('aws s3 cp $fq1 .')
 	get_ipython().system('aws s3 cp $fq2 .')
 
 	# run STAR-fus, from docker container
-	get_ipython().system('sudo docker run -v `pwd`:/data --rm trinityctat/ctatfusion /usr/local/src/STAR-Fusion/STAR-Fusion --left_fq /data/*_R1_001.fastq.gz --right_fq /data/*_R2_001.fastq.gz --genome_lib_dir /data/ctat_genome_lib_build_dir -O /data/StarFusionOut/$cell --FusionInspector validate --examine_coding_effect --denovo_reconstruct --CPU 1')
+	get_ipython().system('sudo docker run -v `pwd`:/data --rm trinityctat/ctatfusion /usr/local/src/STAR-Fusion/STAR-Fusion --left_fq /data/$cell_R1_001.fastq.gz --right_fq /data/$cell_R2_001.fastq.gz --genome_lib_dir /data/ctat_genome_lib_build_dir -O /data/StarFusionOut/$cell --FusionInspector validate --examine_coding_effect --denovo_reconstruct --CPU 1')
 
 	# copy output back up to s3!!
 	get_ipython().system('aws s3 cp StarFusionOut/$cell s3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/StarFusionOut_manual/$cell/ --recursive')
 
 	# remove current fastqs
-	get_ipython().system('rm *.fastq.gz')
+	get_ipython().system('rm ${cell}_R1_001.fastq.gz')
+	get_ipython().system('rm ${cell}_R2_001.fastq.gz')
+
+	# remove current StarFusionOut dir
+	#get_ipython().system('rm -rf StarFusionOut/$cell')
 
 #////////////////////////////////////////////////////////////////////
 # main()
@@ -124,11 +132,11 @@ for i in range(0, len(runs_df.index)):
 	currCells = getCellTable(prefix)
 
 	print('creating pool')
-	p = mp.Pool(processes=12)
+	p = mp.Pool(processes=6)
 
 	num_partitions = len(currCells.index)
-	currCells_split = np.array_split(currCells, 12) # split df into 12 partitions
-	#print(currCells_split)
+	currCells_split = np.array_split(currCells, num_partitions) # split df into X partitions
+
 	p.map(runTrinity, currCells_split)
 	
 	p.close()
