@@ -7,10 +7,12 @@
 # lets try to implement a parallel solution for this
 # usage:
 #		ipython fusionDetectionPipelineManual_parallel.py
+#
+#		RUN FROM SCREEN SESSION!!
 #////////////////////////////////////////////////////////////////////
 #////////////////////////////////////////////////////////////////////
 import os
-import sys
+import numpy as np
 import multiprocessing as mp
 import json
 import pandas as pd
@@ -90,6 +92,9 @@ def runTrinity(row):
 	# run STAR-fus, from docker container
 	get_ipython().system('sudo docker run -v `pwd`:/data --rm trinityctat/ctatfusion /usr/local/src/STAR-Fusion/STAR-Fusion --left_fq /data/*_R1_001.fastq.gz --right_fq /data/*_R2_001.fastq.gz --genome_lib_dir /data/ctat_genome_lib_build_dir -O /data/StarFusionOut/$cell --FusionInspector validate --examine_coding_effect --denovo_reconstruct')
 
+	# copy output back up to s3!!
+	get_ipython().system('aws s3 cp StarFusionOut/$cell s3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/StarFusionOut_manual/$cell/ --recursive')
+
 	# remove current fastqs
 	get_ipython().system('rm *.fastq.gz')
 
@@ -123,7 +128,9 @@ for i in range(0, len(runs_df.index)-1): # -1 here?
 
 	try:
 		#cells_list = p.map(getGeneCellMutCounts, fNames, chunksize=1) # default chunksize=1
-		p.apply(runTrinity, currCells, axis=1)
+		num_partitions = currCells.index - 1
+		currCells_split = np.array_split(currCells, num_partitions)
+		p.map(runTrinity, currCells_split)
 	finally:
 		p.close()
 		p.join()
