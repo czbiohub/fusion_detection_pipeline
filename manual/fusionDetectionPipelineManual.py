@@ -88,7 +88,7 @@ def runTrinity(row):
 	get_ipython().system('aws s3 cp $fq2 .')
 
 	# run STAR-fus, from docker container
-	get_ipython().system('sudo docker run -v `pwd`:/data --rm trinityctat/ctatfusion /usr/local/src/STAR-Fusion/STAR-Fusion --left_fq /data/*_R1_001.fastq.gz --right_fq /data/*_R2_001.fastq.gz --genome_lib_dir /data/ctat_genome_lib_build_dir -O /data/StarFusionOut/$cell --FusionInspector validate --examine_coding_effect --denovo_reconstruct')
+	get_ipython().system('sudo docker run -v `pwd`:/data --rm trinityctat/ctatfusion /usr/local/src/STAR-Fusion/STAR-Fusion --left_fq /data/*_R1_001.fastq.gz --right_fq /data/*_R2_001.fastq.gz --genome_lib_dir /data/ctat_genome_lib_build_dir -O /data/StarFusionOut/$cell --FusionInspector validate --examine_coding_effect --denovo_reconstruct --CPU 34')
 
 	# remove current fastqs
 	get_ipython().system('rm *.fastq.gz')
@@ -112,7 +112,7 @@ runs_df = pd.read_table(f, delim_whitespace=True, header=None, names=['is_prefix
 # add a full_path col
 runs_df['full_path'] = 's3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/' + runs_df['run_name']
 
-for i in range(0, len(runs_df.index)-1): # -1 here? 
+for i in range(0, len(runs_df.index)):
 	global prefix # dont like this
 	prefix = runs_df['full_path'][i]
 	print(prefix)

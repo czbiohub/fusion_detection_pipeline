@@ -81,6 +81,8 @@ def getCellTable(prefix):
 #////////////////////////////////////////////////////////////////////
 
 def runTrinity(row):
+	#get_ipython().system('export PATH=$PATH:$wrkDir')
+
 	fq1_raw = row['input_fastq1'].to_string() # these will all be series -- need to convert to strings
 	fq2_raw = row['input_fastq2'].to_string()
 	cell_raw = row['sample_id'].to_string()
@@ -97,10 +99,7 @@ def runTrinity(row):
 	fq_str_2 = cell + '_R2_001.fastq.gz'
 	outDir = './StarFusionOut/' + cell + '_out'
 	
-	# run STAR-fus, from docker container
-	#get_ipython().system('sudo docker run -v `pwd`:/data --rm trinityctat/ctatfusion /usr/local/src/STAR-Fusion/STAR-Fusion --left_fq $fq_str_1 --right_fq $fq_str_2 --genome_lib_dir /data/ctat_genome_lib_build_dir -O $outDir --FusionInspector validate --STAR_use_shared_memory --examine_coding_effect --denovo_reconstruct --CPU 1')
-
-	get_ipython().system('STAR-Fusion --left_fq $fq_str_1 --right_fq $fq_str_2 --genome_lib_dir /data/ctat_genome_lib_build_dir -O $outDir --FusionInspector validate --STAR_use_shared_memory --examine_coding_effect --denovo_reconstruct --CPU 1')
+	get_ipython().system('STAR-Fusion --left_fq $fq_str_1 --right_fq $fq_str_2 --genome_lib_dir ./ctat_genome_lib_build_dir -O $outDir --FusionInspector validate --STAR_use_shared_memory --examine_coding_effect --denovo_reconstruct --CPU 1')
 
 	# copy output back up to s3!!
 	#get_ipython().system('aws s3 cp ./StarFusionOut/${cell}_out s3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/StarFusionOut_manual/$cell --recursive')
@@ -112,7 +111,7 @@ def runTrinity(row):
 	# clean up -- remove current StarFusionOut dir
 	#get_ipython().system('sudo rm -rf StarFusionOut/$cell')
 
-	return('finished!') # maybe i need a return statement here!
+	return('finished!') # maybe i need a return statement here?
 
 #////////////////////////////////////////////////////////////////////
 # main()
@@ -121,6 +120,9 @@ def runTrinity(row):
 # 	pop life
 #	we all got space 2 fill!
 #////////////////////////////////////////////////////////////////////
+
+global wrkDir
+wrkDir = '/home/ubuntu/expansionVol/fusion_detection_pipeline/manual'
 
 # get list of all the runs
 bucketPrefixes = 's3://darmanis-group/singlecell_lungadeno/non_immune/nonImmune_fastqs_9.27/'
