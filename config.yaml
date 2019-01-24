@@ -1,10 +1,9 @@
-assoc: dynamodb,czbiohub-reflow-quickstart
 cluster: ec2cluster
 ec2cluster:
   securitygroup: sg-661d7f19
   region: us-west-2
   disktype: gp2
-  diskspace: 2500
+  diskspace: 5000
   diskslices: 0
   ami: ami-4296ec3a
   maxinstances: 25
@@ -49,13 +48,26 @@ ec2cluster:
   - t2.micro
   - t2.nano
   - t2.small
+  - c5n.9xlarge
+  - c5n.18xlarge
+  - c4.8xlarge
+  - r5d.4xlarge
+  - r5d.12xlarge
+  - r5d.24xlarge
+  - r5a.12xlarge
+  - r5a.24xlarge
+  - r4.8xlarge
+  - r4.16xlarge
+  - x1e.4xlarge
+  - x1e.8xlarge
+  - x1e.16xlarge
+  - x1e.32xlarge
+  - x1.16xlarge
   sshkey: |
     ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCa/3Zq5JUnnkPWAV2xkFbW6qXG1lsiNwymO1Yc2IAZ4eOQmCwlKnXa3+jeTTVvdP760Pg2Uxl3eRUDy4xRXqnHK5ZhxZ/BFEJpMyGZugD7vxAaUrpTfrDNXAARqSCx8UREdZ+jqQdTgYZcdQ/XkXq5JzepnHYK1nGpUToI4qx9cBnszBGL5lMMMlNCbMjQY0JNBkX1UuxUcCftVpQJ3oWa5PoxGnIA1R07n0EMSYT61aMgM3xGzCmEeN+IwsJpS4FlkUlxAHFS4EmAoX1qhM890HTe5sg66xTJ8wM4Fy1cudWkOiiLnxnLcxEKJfgL9DjgOWekN4HsqOvorpkCvkBx ubuntu@ip-172-31-7-88
   keyname: ""
   cloudconfig: {}
 https: httpsca,/home/ubuntu/.reflow/reflow.pem
 repository: s3,czbiohub-reflow-quickstart-cache
-user: local,lincoln-harris.reflow@localhost
-repository: s3,czbiohub-reflow-quickstart-cache
 assoc: dynamodb,czbiohub-reflow-quickstart
-user: local,lincoln-harris.reflow@localhost
+user: local,lincoln.reflow@localhost
