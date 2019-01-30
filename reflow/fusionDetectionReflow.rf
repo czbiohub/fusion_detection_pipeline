@@ -33,14 +33,14 @@ val CTAT = "s3://darmanis-group/singlecell_lungadeno/rawdata/GRCh37_v19_CTAT_lib
 // GetGenomeBuild()
 //		Pull down this effing genome build that for SOME REASON isnt included in the docker image
 func GetGenomeBuild(sample_id string) = // funcArg as dummy variable? 
-	exec(image := star, cpu := 4, mem := 8*GiB, disk := 100*GiB) (outFile file) {"
+	exec(image := star, cpu := 4, mem := 8*GiB, disk := 50*GiB) (outFile file) {"
 		wget -O {{outFile}} https://data.broadinstitute.org/Trinity/CTAT_RESOURCE_LIB/GRCh37_v19_CTAT_lib_Feb092018.plug-n-play.tar.gz
 	"}
 
 // Decompress()
 //		Untar the genome_build tarball
 func Decompress(tgz file) =
-	exec(image := star, cpu := 4, mem := 8*GiB, disk := 100*GiB) (output dir) {" 
+	exec(image := star, cpu := 4, mem := 8*GiB, disk := 50*GiB) (output dir) {" 
 		tar xvf {{tgz}} -C {{output}}
 	"}
 
@@ -64,7 +64,7 @@ val gBuildDecomp = Decompress(gBuildComp)
 starOutDir := StarFusion(fq1, fq2, gBuildDecomp, sample_id)
 
 // Main()
-@requires(cpu := threads, mem := 64*GiB, disk := 2000*GiB)
+@requires(cpu := threads, mem := 64*GiB, disk := 4000*GiB)
 val Main = dirs.Copy(starOutDir, output_dir) // output_dir is specified as a cmd line param
 
 ////////////////////////////////////////////////////////////////////
