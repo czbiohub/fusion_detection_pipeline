@@ -24,3 +24,5 @@ GRCh37_v19_CTAT_lib_Feb092018
 # Star-Fus out
 StarFusionOut
 STARFusionOut
+*.tsv
+
