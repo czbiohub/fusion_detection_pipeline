@@ -8,6 +8,7 @@
 #////////////////////////////////////////////////////////////////////
 import pandas as pd
 import os
+import sys
 
 #////////////////////////////////////////////////////////////////////
 # searchFunc()
@@ -39,20 +40,29 @@ def searchFunc(row, FOI):
 #////////////////////////////////////////////////////////////////////
 global colNames
 
-pos_test = 'CD24P4--QPRT'
-queryStr = 'ALK--EML4'
-queryStr_rev = 'EML4--ALK'
+queryStr = sys.argv[1]
+print(' ')
+print('query: %s' % queryStr)
+print(' ')
+
+outFileStr = queryStr + '.query.out.csv'
 
 colNames = ['cellName', 'fusionPresent_bool']
 
 cellFiles = os.listdir('./fusion_prediction_files')
 cellFiles_df = pd.DataFrame(data=cellFiles, columns=['name']) # need to convert to df before apply call
 
-outputRows = cellFiles_df.apply(searchFunc, axis=1, args=(pos_test,))
+print('running...')
+outputRows = cellFiles_df.apply(searchFunc, axis=1, args=(queryStr,))
 outputRows_list = list(outputRows) # for some reason need to convert to a list before concatting
-
+print('done!')
 outputDF = pd.concat(outputRows_list, ignore_index=True)
-outputDF.to_csv('testOut.csv', index=False)
+outputDF.to_csv(outFileStr, index=False)
+print(' ')
 
 #////////////////////////////////////////////////////////////////////
 #////////////////////////////////////////////////////////////////////
+
+#pos_test = 'CD24P4--QPRT'
+#queryStr = 'ALK--EML4'
+#queryStr_rev = 'EML4--ALK'
