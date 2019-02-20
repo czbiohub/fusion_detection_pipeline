@@ -90,7 +90,7 @@ def searchFunc(row, FOI):
 #////////////////////////////////////////////////////////////////////
 global colNames
 
-mode = sys.argv[1]
+mode = int(sys.argv[1])
 queryStr = sys.argv[2]
 
 print(' ')
@@ -106,7 +106,6 @@ cellFiles_df = pd.DataFrame(data=cellFiles, columns=['name']) # need to convert 
 print('running...')
 
 if mode == 0: # standard two-gene mode
-
 	queryStrSplit = queryStr.split('--')
 	queryStrRev = queryStrSplit[1] + '--' + queryStrSplit[0]
 
