@@ -4,6 +4,17 @@
 # author: Lincoln 
 # date: 2.19.19
 #
+#	Hey you! yes you! Do you have a shit-ton of tsv files that contain
+#	the fusions identified by STAR-fusion, on a per-cell basis?? 
+#	then this tool is the one for you!! so step right up
+#
+#	run this puppy like so: 
+#
+#		python3 fusionSearchTool.py [ROI]
+#
+#			where [ROI] is the fusion you want to search for, separated
+#			by some motherfuckin dashes, 
+#				ie. ALK--EML4
 #////////////////////////////////////////////////////////////////////
 #////////////////////////////////////////////////////////////////////
 import pandas as pd
@@ -12,8 +23,8 @@ import sys
 
 #////////////////////////////////////////////////////////////////////
 # searchFunc()
-#	what does this fucker do? 
-#
+#	doing the actual searching from here -- turns the #FusionName col
+#	into a list, then searches that fucker for the FOI, 
 #////////////////////////////////////////////////////////////////////
 def searchFunc(row, FOI):
 	cellFile = row['name']
@@ -62,7 +73,3 @@ print(' ')
 
 #////////////////////////////////////////////////////////////////////
 #////////////////////////////////////////////////////////////////////
-
-#pos_test = 'CD24P4--QPRT'
-#queryStr = 'ALK--EML4'
-#queryStr_rev = 'EML4--ALK'
