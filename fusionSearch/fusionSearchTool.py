@@ -60,7 +60,6 @@ queryStrSplit = queryStr.split('--')
 queryStrRev = queryStrSplit[1] + '--' + queryStrSplit[0]
 
 outFileStr = queryStr + '.query.out.csv'
-outFileRevStr = queryStr + '.rev.query.out.csv'
 
 colNames = ['cellName', 'fusionPresent_bool']
 
@@ -68,20 +67,24 @@ cellFiles = os.listdir('./fusion_prediction_files')
 cellFiles_df = pd.DataFrame(data=cellFiles, columns=['name']) # need to convert to df before apply call
 
 print('running...')
+
 outputRows = cellFiles_df.apply(searchFunc, axis=1, args=(queryStr,))
 outputRows_list = list(outputRows) # for some reason need to convert to a list before concatting
-print('done!')
 outputDF = pd.concat(outputRows_list, ignore_index=True)
-outputDF.to_csv(outFileStr, index=False)
-print(' ')
 
-print('running revComp...')
 outputRows_rev = cellFiles_df.apply(searchFunc, axis=1, args=(queryStrRev,))
 outputRows_rev_list = list(outputRows_rev) # for some reason need to convert to a list before concatting
-print('done!')
 outputDF_rev = pd.concat(outputRows_rev_list, ignore_index=True)
-outputDF_rev.to_csv(outFileRevStr, index=False)
-print(' ')
+
+outputDF.columns = colNames
+outputDF_rev.columns = colNames
+
+print('done!')
+
+outputDF_comb = pd.DataFrame(columns=colNames)
+outputDF_comb['cellName'] = outputDF['cellName']
+outputDF_comb['fusionPresent_bool'] = outputDF['fusionPresent_bool'] + outputDF_rev['fusionPresent_bool']
+outputDF_comb.to_csv(outFileStr, index=False)
 
 #////////////////////////////////////////////////////////////////////
 #////////////////////////////////////////////////////////////////////
