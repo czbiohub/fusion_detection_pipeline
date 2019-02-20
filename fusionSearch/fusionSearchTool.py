@@ -23,12 +23,13 @@ def searchFunc(row, FOI):
 	curr_fusions = pd.read_csv(path, sep='\t')
 	
 	fusionsList = list(curr_fusions['#FusionName'])
-	fusionsList = ['hello', 'world']
-	
-	if pos_test in fusionsList:
-		return True
+
+	if str(FOI) in fusionsList:
+		outputRow = pd.DataFrame([[cellFile, 1]], columns=['cellName', 'fusionPresent_bool'])
 	else:
-		return False
+		outputRow = pd.DataFrame([[cellFile, 0]], columns=['cellName', 'fusionPresent_bool'])
+
+	return outputRow
 
 #////////////////////////////////////////////////////////////////////
 # main()
@@ -43,7 +44,11 @@ queryStr_rev = 'EML4--ALK'
 cellFiles = os.listdir('./fusion_prediction_files')
 cellFiles_df = pd.DataFrame(data=cellFiles, columns=['name']) # need to convert to df before apply call
 
-cellFiles_df.apply(searchFunc, axis=1, args=(pos_test,))
+outputDF_init = pd.DataFrame(columns=['cellName', 'fusionPresent_bool']) 	
+
+outputRows = cellFiles_df.apply(searchFunc, axis=1, args=(pos_test,))
+outputDF = outputDF_init.append(outputRows, ignore_index=True)
+outputDF.to_csv('testOut.csv', index=False)
 
 #////////////////////////////////////////////////////////////////////
 #////////////////////////////////////////////////////////////////////
