@@ -36,13 +36,19 @@ def searchFunc_ANY(row, GOI):
 	path = cwd + '/' + 'fusion_prediction_files/' + cellFile
 	
 	curr_fusions = pd.read_csv(path, sep='\t')
-	
-	fusionsList = list(curr_fusions['#FusionName'])
+
+	try:
+		fusionsList = list(curr_fusions['#FusionName'])
+	except KeyError:
+		print('error caught, in %s' % cellName)
+		outputRow = pd.DataFrame([[cellName, 'ERROR']])
+		return outputRow 
 
 	outputRow = pd.DataFrame([[cellName, 0]])
-
+		
 	for item in fusionsList:
 		if GOI in item:
+			print(cellName)
 			outputRow = pd.DataFrame([[cellName, 1]])
 			return outputRow
 
@@ -62,10 +68,16 @@ def searchFunc(row, FOI):
 	
 	curr_fusions = pd.read_csv(path, sep='\t')
 	
-	fusionsList = list(curr_fusions['#FusionName'])
+	try:
+		fusionsList = list(curr_fusions['#FusionName'])
+	except KeyError:
+		print('error caught, in %s' % cellName)
+		outputRow = pd.DataFrame([[cellName, 'ERROR']])
+		return outputRow 
 
 	if str(FOI) in fusionsList:
 		outputRow = pd.DataFrame([[cellName, 1]])
+		print(cellName)
 	else:
 		outputRow = pd.DataFrame([[cellName, 0]])
 
