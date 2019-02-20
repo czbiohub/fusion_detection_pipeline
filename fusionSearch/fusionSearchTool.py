@@ -22,6 +22,30 @@ import os
 import sys
 
 #////////////////////////////////////////////////////////////////////
+# searchFunc_ANY()
+#	can i define a func for searching for ANY partner to a given 
+#	query gene? 
+#////////////////////////////////////////////////////////////////////
+def searchFunc_ANY(row, GOI):
+	cellFile = row['name']
+	cellName = cellFile.split('_')[0] + '_' + cellFile.split('_')[1]
+
+	cwd = os.getcwd()
+	path = cwd + '/' + 'fusion_prediction_files/' + cellFile
+	
+	curr_fusions = pd.read_csv(path, sep='\t')
+	
+	fusionsList = list(curr_fusions['#FusionName'])
+
+	if str(GOI) in fusionsList:
+		print('found a match in ANY')
+		outputRow = pd.DataFrame([[cellName, 1]])
+	else:
+		outputRow = pd.DataFrame([[cellName, 0]])
+
+	return outputRow
+
+#////////////////////////////////////////////////////////////////////
 # searchFunc()
 #	doing the actual searching from here -- turns the #FusionName col
 #	into a list, then searches that fucker for the FOI, 
