@@ -69,7 +69,7 @@ def searchFunc(row, FOI):
 	cellName = cellFile.split('_')[0] + '_' + cellFile.split('_')[1]
 
 	cwd = os.getcwd()
-	path = cwd + '/' + 'fusion_prediction_files_sub/' + cellFile
+	path = cwd + '/' + 'fusion_prediction_files/' + cellFile
 	
 	curr_fusions = pd.read_csv(path, sep='\t')
 	
@@ -105,7 +105,7 @@ print(' ')
 outFileStr = queryStr + '.query.out.csv'
 colNames = ['cellName', 'fusionPresent_bool']
 
-cellFiles = os.listdir('./fusion_prediction_files_sub')
+cellFiles = os.listdir('./fusion_prediction_files')
 cellFiles_df = pd.DataFrame(data=cellFiles, columns=['name']) # need to convert to df before apply call
 
 print('running...')
