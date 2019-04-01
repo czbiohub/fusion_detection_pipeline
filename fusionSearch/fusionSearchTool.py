@@ -15,6 +15,9 @@
 #			where [ROI] is the fusion you want to search for, separated
 #			by some motherfuckin dashes, 
 #				ie. ALK--EML4
+#
+#           0 for standard two-gene run mode
+#           1 for single gene query (any fusion partner)
 #////////////////////////////////////////////////////////////////////
 #////////////////////////////////////////////////////////////////////
 import pandas as pd
@@ -47,8 +50,12 @@ def searchFunc_ANY(row, GOI):
 	outputRow = pd.DataFrame([[cellName, 0]])
 		
 	for item in fusionsList:
-		if GOI in item:
+		item0 = item.split('--')[0]
+		item1 = item.split('--')[1]
+		if GOI == item0 or GOI == item1:
 			print(cellName)
+			#print(item0)
+			#print(item1)
 			outputRow = pd.DataFrame([[cellName, 1]])
 			return outputRow
 
@@ -64,7 +71,7 @@ def searchFunc(row, FOI):
 	cellName = cellFile.split('_')[0] + '_' + cellFile.split('_')[1]
 
 	cwd = os.getcwd()
-	path = cwd + '/' + 'fusion_prediction_files/' + cellFile
+	path = cwd + '/' + 'fusion_prediction_files_sub/' + cellFile
 	
 	curr_fusions = pd.read_csv(path, sep='\t')
 	
@@ -100,7 +107,7 @@ print(' ')
 outFileStr = queryStr + '.query.out.csv'
 colNames = ['cellName', 'fusionPresent_bool']
 
-cellFiles = os.listdir('./fusion_prediction_files')
+cellFiles = os.listdir('./fusion_prediction_files_sub')
 cellFiles_df = pd.DataFrame(data=cellFiles, columns=['name']) # need to convert to df before apply call
 
 print('running...')
