@@ -102,7 +102,7 @@ print(' ')
 print('query: %s' % queryStr)
 print(' ')
 
-outFileStr = queryStr + '.query.out.csv'
+outFileStr = './out/' + queryStr + '.query.out.csv'
 colNames = ['cellName', 'fusionPresent_bool']
 
 cellFiles = os.listdir('./fusion_prediction_files')
