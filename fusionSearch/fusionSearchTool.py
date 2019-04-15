@@ -53,6 +53,7 @@ def searchFunc_ANY(row, GOI):
 		item1 = item.split('--')[1]
 		if GOI == item0 or GOI == item1:
 			print(cellName)
+			print(item)
 			outputRow = pd.DataFrame([[cellName, 1]])
 			return outputRow
 
